@@ -1,20 +1,22 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Path
 
-malware_urls = {
-    "www.example.site.cl", 
-    "www.example.site.2.cl/badpath", 
-    "www.example.site.3.com"
+MALWARE_URLS = {
+    "login-secure-update.com/banking/auth",
+    "free-movie-downloads.cl/installer.exe",
+    "customer-support-alert.net:8080/login"
 }
 
 app = FastAPI()
 
 @app.get("/urlinfo/1/{hostname_and_port}/{original_path_and_query_string:path}")
-def get_url_info(hostname_and_port: str, original_path_and_query_string: str):
+def get_url_info(
+    hostname_and_port: str = Path(..., min_length=3, max_length=255, pattern=r"^[a-zA-Z0-9.-]+(:\d+)?$"),
+    original_path_and_query_string: str = Path(...)
+):
+    domain_part = hostname_and_port.lower()
+    full_url = f"{domain_part}/{original_path_and_query_string}".rstrip("/")
     
-    full_url = f"{hostname_and_port}/{original_path_and_query_string}"
-    full_url = full_url.rstrip("/")
-
-    if full_url in malware_urls:
+    if full_url in MALWARE_URLS:
         return {"status": "unsafe", "message": "Malware detected on this URL."}
     
     return {"status": "safe", "message": "URL is clean."}
