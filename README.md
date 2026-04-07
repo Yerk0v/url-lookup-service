@@ -2,6 +2,8 @@
 
 A small application who listens to GET requests and returns wether the URL passed is safe or not.
 
+--- 
+
 ## API Usage
 
 ### Request
@@ -27,7 +29,7 @@ The service listens for `GET` requests in the following format:
     "message": "Malware detected on this URL."
 }
 ```
-
+---
 ## Running the application
 
 You can run this application locally using Python or via Docker.
@@ -59,7 +61,7 @@ pip install -r requirements.txt
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```  
-
+---
 ## Quick curl tests
 
 ```bash
@@ -68,6 +70,8 @@ curl -s http://localhost:8000/urlinfo/1/www.example.site.2.cl/badpath
 curl -s http://localhost:8000/urlinfo/1/www.example.site.3.com/
 curl -s http://localhost:8000/urlinfo/1/www.google.com/search
 ```
+
+---
 ## Running tests
 
 To run the automated test suite, ensure your dependencies are installed and run:
