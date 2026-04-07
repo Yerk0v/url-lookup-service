@@ -78,5 +78,3 @@ pytest
 
 **Note**: Make sure you use the same environment to run the app locally to run tests.
 
-
-

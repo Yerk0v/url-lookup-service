@@ -36,3 +36,4 @@ Q: You need to deploy a new version of this application. What would you do?
 - https://docs.aws.amazon.com/whitepapers/latest/real-time-communication-on-aws/cross-region-dns-based-load-balancing-and-failover.html
 - https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html
 - https://medium.com/@sofiasondh/what-is-index-in-sql-142c50983328
+- Gemini Pro 3.1 & ChatGpt (Regex)
