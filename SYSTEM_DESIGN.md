@@ -4,7 +4,7 @@ This document describe typical questions related to how the system should handle
 
 Q: The size of the URL list could grow infinitely. How might you scale this beyond the memory capacity of the system?
 
-- A: A: If the list grows exponentially, it will have a huge impact on the application's RAM usage, eventually causing the server to crash. To handle this, it is much better to move the data out of application memory and use a dedicated Database to query it efficiently. By this, I mean using proper indexing on the database tables so we don't perform slow full-table scans. We can also take advantage of Redis cache system, to query the most common ones.
+- A: If the list grows exponentially, it will have a huge impact on the application's RAM usage, eventually causing the server to crash. To handle this, it is much better to move the data out of application memory and use a dedicated Database to query it efficiently. By this, I mean using proper indexing on the database tables so we don't perform slow full-table scans. We can also take advantage of Redis cache system, to query the most common ones.
 
 Q: Assume that the number of requests will exceed the capacity of a single system, describe how might you solve this, and how might this change if you have to distribute this workload to an additional region, such as Europe. 
 
