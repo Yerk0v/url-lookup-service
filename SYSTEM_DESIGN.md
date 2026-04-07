@@ -29,3 +29,10 @@ Q: What are some considerations for the lifecycle of the app?
 
 Q: You need to deploy a new version of this application. What would you do?
 - A: I would create a new release on the source control tool (GitHub, GitLab, etc.), briefly describe the new features or enhancements, and then wait for the CI/CD pipeline to tag and deploy it automatically. Because this service blocks users from accessing websites while it checks URLs, it cannot go down. Therefore, the deployment must be a rolling update or a Blue/Green deployment to ensure zero downtime during the switch.
+  
+**Sources used to answer and implement the application**: 
+
+- https://fastapi.tiangolo.com/tutorial/path-params/?h=path
+- https://docs.aws.amazon.com/whitepapers/latest/real-time-communication-on-aws/cross-region-dns-based-load-balancing-and-failover.html
+- https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html
+- https://medium.com/@sofiasondh/what-is-index-in-sql-142c50983328
