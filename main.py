@@ -3,14 +3,32 @@ import logging
 import time 
 import json 
 import os 
+import sys
 
 log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 logging.basicConfig(level=getattr(logging, log_level), format='%(asctime)s %(levelname)s %(name)s %(message)s')
 
 app = FastAPI()
 
-with open("data/urls.json", "r") as file:
-    data = json.load(file)
+file_path = os.getenv("FILE_PATH", "data/urls.json")
+
+try:
+    with open(file_path, "r") as file:
+        data = json.load(file)
+    logging.info(f"{file_path} loaded successfully!")
+
+except FileNotFoundError:
+    logging.error(f"{file_path} doesn't exist")
+    sys.exit(-1)
+
+except json.JSONDecodeError as e:
+    logging.error(f"Invalid JSON in {file_path}: {e}")
+    sys.exit(-1)
+
+except Exception as e:
+    logging.error(f"Unexpected error: {e}")
+    sys.exit(-1)
+
 
 @app.get("/urlinfo/1/{hostname_and_port}/{original_path_and_query_string:path}")
 def get_url_info(
