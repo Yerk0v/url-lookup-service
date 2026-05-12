@@ -2,8 +2,6 @@
 
 A small application who listens to GET requests and returns wether the URL passed is safe or not.
 
---- 
-
 ## API Usage
 
 ### Request
