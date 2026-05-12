@@ -3,3 +3,5 @@ pydantic==2.12.5
 uvicorn==0.44.0
 pytest==8.0.0
 httpx==0.25.0
+prometheus_fastapi_instrumentator==7.1.0
+python-dotenv==1.2.2
