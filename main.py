@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Path, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 import logging 
 import time 
 import json 
 import os 
-import sys
 from prometheus_fastapi_instrumentator import Instrumentator
 from dotenv import load_dotenv
+import uuid 
 
 load_dotenv()
 
@@ -41,6 +41,23 @@ setup_metrics(app)
 startup_time = time.time()
 
 file_path = os.getenv("FILE_PATH", "data/urls.json")
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    request_id = str(uuid.uuid4())[:8]
+    start = time.time()
+
+    response = await call_next(request)
+
+    duration = round((time.time() - start) * 1000, 2)
+
+    logging.info(
+        f"rid={request_id} method={request.method} path={request.url.path} "
+        f"status={response.status_code} duration_ms={duration}"
+    )
+
+    response.headers["X-Request-ID"] = request_id
+    return response 
 
 @app.get("/health")
 def health_check():
@@ -81,7 +98,7 @@ except Exception as e:
 @app.get("/urlinfo/1/{hostname_and_port}/{original_path_and_query_string:path}")
 def get_url_info(
     hostname_and_port: str,
-    original_path_and_query_string: str
+    original_path_and_query_string: str,
 ):
     try: 
         domain = hostname_and_port.lower().strip()

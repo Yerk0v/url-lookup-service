@@ -6,7 +6,12 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt 
 
+RUN adduser --disable-password --gecos "" appuser \
+    && chown appuser /app
+
 COPY . /app 
+
+USER appuser 
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
