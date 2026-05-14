@@ -3,5 +3,10 @@
         "login-secure-update.com/banking/auth",
         "free-movie-downloads.cl/installer.exe",
         "customer-support-alert.net:8080/login"
-    ]    
+    ],
+    "SAFE_URLS": [
+        "google.com",
+        "our-company.cl",
+        "ai-agent-safe.com"
+    ]
 }

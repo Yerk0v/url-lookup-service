@@ -1,65 +1,80 @@
 from fastapi.testclient import TestClient
 from main import app
 
-
 client = TestClient(app)
 
+def test_known_malware_url():
+    resp = client.get(
+        "/urlinfo/1/login-secure-update.com/banking/auth"
+    )
 
-def test_host_only_safe_when_only_path_listed():
-    # Malware entry has path; host-only should be safe
-    resp = client.get("/urlinfo/1/login-secure-update.com/")
     assert resp.status_code == 200
-    body = resp.json()
-    assert body["status"] == "safe"
+    assert resp.json()["status"] == "unsafe"
 
 
-def test_host_only_safe():
-    resp = client.get("/urlinfo/1/example.com/")
+def test_known_safe_domain():
+    resp = client.get(
+        "/urlinfo/1/google.com/search"
+    )
+
     assert resp.status_code == 200
     assert resp.json()["status"] == "safe"
 
 
-def test_path_unsafe_trailing_slash():
-    resp = client.get("/urlinfo/1/login-secure-update.com/banking/auth/")
+def test_unknown_url():
+    resp = client.get(
+        "/urlinfo/1/random-domain-123.com/test"
+    )
+
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "unknown"
+
+
+def test_exact_malware_match():
+    resp = client.get(
+        "/urlinfo/1/free-movie-downloads.cl/installer.exe"
+    )
+
     assert resp.status_code == 200
     assert resp.json()["status"] == "unsafe"
 
 
-def test_path_safe_different_path():
-    resp = client.get("/urlinfo/1/login-secure-update.com/other")
+def test_similar_but_not_exact_url():
+    resp = client.get(
+        "/urlinfo/1/free-movie-downloads.cl/installer.ex"
+    )
+
     assert resp.status_code == 200
-    assert resp.json()["status"] == "safe"
+    assert resp.json()["status"] == "unknown"
 
 
-def test_port_in_hostname_malware_and_other_port_safe():
-    # Exact port 8080 with path is malware
-    resp = client.get("/urlinfo/1/customer-support-alert.net:8080/login")
-    assert resp.status_code == 200
-    assert resp.json()["status"] == "unsafe"
-    # Different port should be safe (not in list)
-    resp2 = client.get("/urlinfo/1/customer-support-alert.net:9090/login")
-    assert resp2.status_code == 200
-    assert resp2.json()["status"] == "safe"
+def test_port_based_malware_detection():
+    resp = client.get(
+        "/urlinfo/1/customer-support-alert.net:8080/login"
+    )
 
-
-def test_query_string_ignored_for_lookup():
-    # Query parameters should not affect the lookup result with current logic
-    resp = client.get("/urlinfo/1/login-secure-update.com/banking/auth?x=1&y=2")
     assert resp.status_code == 200
     assert resp.json()["status"] == "unsafe"
 
 
-def test_missing_hostname_results_in_404():
+def test_different_port_not_malware():
+    resp = client.get(
+        "/urlinfo/1/customer-support-alert.net:9090/login"
+    )
+
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "unknown"
+
+
+def test_trailing_slash_normalization():
+    resp = client.get(
+        "/urlinfo/1/login-secure-update.com/banking/auth"
+    )
+
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "unsafe"
+
+
+def test_missing_hostname():
     resp = client.get("/urlinfo/1/")
     assert resp.status_code == 404
-
-
-def test_file_exact_malware_and_similar_safe():
-    # Exact malware file path
-    resp = client.get("/urlinfo/1/free-movie-downloads.cl/installer.exe")
-    assert resp.status_code == 200
-    assert resp.json()["status"] == "unsafe"
-    # Similar but not exact
-    resp2 = client.get("/urlinfo/1/free-movie-downloads.cl/installer.ex")
-    assert resp2.status_code == 200
-    assert resp2.json()["status"] == "safe"

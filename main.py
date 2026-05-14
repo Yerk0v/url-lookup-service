@@ -67,46 +67,53 @@ try:
     logging.info(f"{file_path} loaded successfully!")
 
 except FileNotFoundError:
-    logging.error(f"{file_path} doesn't exist")
-    sys.exit(-1)
+    logging.error(f"{file_path} not found")
+    raise RuntimeError("File not found.")
 
 except json.JSONDecodeError as e:
     logging.error(f"Invalid JSON in {file_path}: {e}")
-    sys.exit(-1)
+    raise RuntimeError("Error decoding JSON File.")
 
 except Exception as e:
     logging.error(f"Unexpected error: {e}")
-    sys.exit(-1)
+    raise RuntimeError("Unknown error.")
 
 @app.get("/urlinfo/1/{hostname_and_port}/{original_path_and_query_string:path}")
 def get_url_info(
-    hostname_and_port: str = Path(..., 
-    min_length=3, max_length=255, 
-    pattern=r"^[a-zA-Z0-9.-]+(:\d+)?$"),
-    original_path_and_query_string: str = Path(...,
-    min_length=3,
-    max_length=128,
-    pattern=r"^[a-zA-Z0-9.-]+(:\d+)?$",
-    )
+    hostname_and_port: str,
+    original_path_and_query_string: str
 ):
     try: 
-        domain_part = hostname_and_port.lower()
-        full_url = f"{domain_part}/{original_path_and_query_string}".rstrip("/")
-        
+        domain = hostname_and_port.lower().strip()
+        path = original_path_and_query_string.lower().strip()
+
+        full_url = f"{domain}/{path}"
+
         logging.info(f"Checking URL: {full_url}...")
 
-        if full_url in data['MALWARE_URLS']: 
+        malware_urls = set(data.get("MALWARE_URLS", []))
+        safe_urls = set(data.get("SAFE_URLS", []))
+
+        if full_url in malware_urls:
             return {
-            "status": "unsafe", 
-            "message": "Malware detected on this URL."
+                "status": "unsafe",
+                "message": "Malware detected in URLS"
+            }
+
+        if domain in safe_urls:
+            return {
+                "status": "safe",
+                "message": "Trusted URL"
             }
         
         return {
-            "status": "safe",
-            "message": "The URL is clean!"
+            "status": "unknown",
+            "message": "Unknown URL"
         }
-    
     except Exception as e:
         logging.error(f"Unhandled error checking URL {full_url}: {e}")
-        raise HTTPException(status_code=500, detail="Internal Server Error")
-        
+        raise HTTPException(
+            status_code=500,
+            detail="Internal Server Error"
+        )
+    
