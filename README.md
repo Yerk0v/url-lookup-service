@@ -4,7 +4,14 @@ A small application who listens to GET requests and returns wether the URL passe
 
 ## API Usage
 
-### Request
+### Health endpoints
+
+`GET /health` — returns `{"status": "Healthy"}`
+
+`GET /ready` — returns `{"status": "Ready", "uptime_seconds": <float>}` or `503` if the service is unavailable.
+
+### URL lookup
+
 The service listens for `GET` requests in the following format:
 `GET /urlinfo/1/{hostname_and_port}/{original_path_and_query_string}`
 
@@ -16,15 +23,23 @@ The service listens for `GET` requests in the following format:
 ```json
 {
     "status": "safe",
-    "message": "URL is clean."
+    "message": "Trusted URL"
 }
 ```
 
-**UnSafe URL:**
+**Unsafe URL:**
 ```json
 {
     "status": "unsafe",
-    "message": "Malware detected on this URL."
+    "message": "Malware detected in URLS"
+}
+```
+
+**Unknown URL:**
+```json
+{
+    "status": "unknown",
+    "message": "Unknown URL"
 }
 ```
 ---

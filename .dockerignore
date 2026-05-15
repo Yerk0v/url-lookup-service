@@ -111,3 +111,10 @@ pip-log.txt
 .python-version
 .scrapy
 .webassets-cache
+.git
+.venv
+*.docx
+CURRENT_STATE_REVIEW.md
+venv-dev/
+.env 
+INTERVIEW_FEEDBACK.md 
