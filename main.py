@@ -1,11 +1,28 @@
 from fastapi import FastAPI, HTTPException, Request
-import logging 
-import time 
-import json 
-import os 
+import logging
+import time
+import json
+import os
+import re
 from prometheus_fastapi_instrumentator import Instrumentator
 from dotenv import load_dotenv
-import uuid 
+import uuid
+
+MAX_PATH_LENGTH = 2048
+PATH_PATTERN = re.compile(r"^[A-Za-z0-9._~\-/%?&=:@!$'()*+,;]*$")
+
+def validate_port(hostname_and_port: str) -> None:
+    if ":" not in hostname_and_port:
+        return
+    _, port_str = hostname_and_port.rsplit(":", 1)
+    if not port_str.isdigit() or not (1 <= int(port_str) <= 65535):
+        raise HTTPException(status_code=400, detail="Invalid port (must be 1-65535)")
+
+def validate_path(path: str) -> None:
+    if len(path) > MAX_PATH_LENGTH:
+        raise HTTPException(status_code=400, detail=f"Path too long (max {MAX_PATH_LENGTH})")
+    if not PATH_PATTERN.match(path):
+        raise HTTPException(status_code=400, detail="Path contains invalid characters")
 
 load_dotenv()
 
@@ -100,7 +117,10 @@ def get_url_info(
     hostname_and_port: str,
     original_path_and_query_string: str,
 ):
-    try: 
+    validate_port(hostname_and_port)
+    validate_path(original_path_and_query_string)
+
+    try:
         domain = hostname_and_port.lower().strip()
         path = original_path_and_query_string.lower().strip()
 
