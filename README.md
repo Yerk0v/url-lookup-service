@@ -90,8 +90,8 @@ curl -s http://localhost:8000/urlinfo/1/www.google.com/search
 To run the automated test suite, ensure you have installed requirements-dev:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+python3 -m venv .venv-dev
+source .venv-dev/bin/activate
 ```
 
 ```bash
