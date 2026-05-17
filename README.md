@@ -87,11 +87,20 @@ curl -s http://localhost:8000/urlinfo/1/www.google.com/search
 ---
 ## Running tests
 
-To run the automated test suite, ensure your dependencies are installed and run:
+To run the automated test suite, ensure you have installed requirements-dev:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+```bash
+pip install -r requirements-dev.txt
+```
 
 ```bash
 pytest
 ```  
 
-**Note**: Make sure you use the same environment to run the app locally to run tests.
+**Note**: Make sure you use the dev environment to run tests.
 
